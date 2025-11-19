@@ -1,0 +1,13 @@
+{
+  "zones": [
+    {
+      "id": "zone_1",
+      "label": "porch_right",
+      "polygon": [[900, 400], [1250, 400], [1250, 700], [900, 700]]
+    }
+  ],
+  "meta": {
+    "frame_width": 1280,
+    "frame_height": 720
+  }
+}
