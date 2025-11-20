@@ -26,7 +26,7 @@ GPU (optional): install CUDA toolkit/driver compatible with PyTorch used by Ultr
 
 ## Run
 
-Make sure `test.mp4` is present and `restricted_zones.json` contains your polygon(s).
+Make sure `test.mp4` is present (obtain from TZ source or example video) and `restricted_zones.json` contains your polygon(s).
 
 ```bash
 python runner.py --video test.mp4 --zones restricted_zones.json --output output.mp4 --device cpu --use-tracker
@@ -54,5 +54,5 @@ You can replace the IOU tracker by integrating `deep-sort-realtime` (PyPI). Swap
 ## Tests
 
 ```bash
-pytest -q
+PYTHONPATH=/home/abv/Project/restricted_zone_guard pytest -q
 ```

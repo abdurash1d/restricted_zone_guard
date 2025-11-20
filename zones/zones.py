@@ -49,15 +49,21 @@ def draw_zones(frame: np.ndarray, zones: List[Zone]) -> None:
 
 
 def point_in_polygon(point: Tuple[int, int], polygon: List[Tuple[int, int]]) -> bool:
-    # Ray casting algorithm
+    # Ray casting algorithm, considering points on edges as inside
     x, y = point
     n = len(polygon)
     inside = False
     for i in range(n):
         x1, y1 = polygon[i]
         x2, y2 = polygon[(i + 1) % n]
-        # Check if point is on vertex or edge
-        if (y1 == y2) and (y == y1) and min(x1, x2) <= x <= max(x1, x2):
+        # Check if point is on vertex
+        if (x, y) == (x1, y1) or (x, y) == (x2, y2):
+            return True
+        # Check if point is on horizontal edge
+        if y1 == y2 and y == y1 and min(x1, x2) <= x <= max(x1, x2):
+            return True
+        # Check if point is on vertical edge
+        if x1 == x2 and x == x1 and min(y1, y2) <= y <= max(y1, y2):
             return True
         # Check ray crossing
         intersects = ((y1 > y) != (y2 > y)) and (
