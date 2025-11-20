@@ -1,11 +1,10 @@
 # Restricted Zone Guard
 
-Simple intrusion detection pipeline using YOLO to detect people and a minimal IOU tracker, with per-ID alarm and 3s grace timer.
+A simple system I built for detecting people entering restricted areas using YOLO and some tracking logic. It shows alarms when someone crosses into a zone and gives them a 3-second grace period.
 
 ## Install
 
-- Python 3.11+
-- Create venv and install deps:
+Requires Python 3.11+. I used a virtual environment to keep things clean.
 
 ```bash
 python -m venv .venv
@@ -13,7 +12,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-YOLO weights will auto-download on first run (default `yolov8n.pt`). If you need to pre-download:
+The YOLO model downloads automatically on first run. If you want it pre-downloaded:
 
 ```bash
 python - <<'PY'
@@ -22,34 +21,34 @@ YOLO('yolov8n.pt')
 PY
 ```
 
-GPU (optional): install CUDA toolkit/driver compatible with PyTorch used by Ultralytics. Then run with `--device gpu`.
+For GPU, get CUDA set up with PyTorch. Then use `--device gpu`.
 
 ## Run
 
-Make sure `test.mp4` is present (obtain from TZ source or example video) and `restricted_zones.json` contains your polygon(s).
+Grab `test.mp4` from the task description, and make sure `restricted_zones.json` has your polygons.
 
 ```bash
 python runner.py --video test.mp4 --zones restricted_zones.json --output output.mp4 --device cpu --use-tracker
 ```
 
-Press `q` to quit.
+Hit `q` to stop.
 
 ## File structure
 
-- detector/model.py — YOLO wrapper (people only)
-- tracker/tracker.py — simple IOU tracker
-- zones/zones.py — load/save zones JSON, draw, point-in-polygon
-- alarm/manager.py — per-ID alarm/timers
-- runner.py — main loop, overlays, I/O
-- tests/ — unit tests for zones and alarm
+- detector/model.py — Wraps YOLO to detect people
+- tracker/tracker.py — Basic IOU tracker for IDs
+- zones/zones.py — Handles loading zones from JSON, drawing them, and checking if points are inside
+- alarm/manager.py — Manages alarms per person with timers
+- runner.py — Main script that ties everything together, adds overlays, and saves video
+- tests/ — Some unit tests for zones and alarms
 
 ## How it works (short)
 
-Each frame, YOLO detects people; IOU tracker assigns persistent IDs. We compute each track center and check containment in any restricted polygon via ray casting. The AlarmManager turns alarm ON immediately when inside, and starts a per-ID 3s countdown on exit or disappearance; re-entry cancels the timer. Frames are displayed and written to `output.mp4` with overlays.
+Frame by frame: YOLO finds people, tracker assigns IDs, check if centers are in zones using ray casting. Alarm goes on right away inside, starts a 3s timer on exit or if person disappears. Display and save with overlays.
 
 ### DeepSORT
 
-You can replace the IOU tracker by integrating `deep-sort-realtime` (PyPI). Swap `IOUTracker` calls in `runner.py` with the library's tracker update, and pass detection bboxes/confs. Keep per-ID logic unchanged.
+You could swap in DeepSORT from PyPI for better tracking. Just replace the tracker calls in runner.py, keep the alarm logic.
 
 ## Tests
 
